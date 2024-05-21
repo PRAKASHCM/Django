@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Excel Data</title>
+    <style>
+        table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+        table, th, td {
+            border: 1px solid black;
+        }
+        th, td {
+            padding: 8px;
+            text-align: left;
+        }
+    </style>
+    <script>
+        function filterTable() {
+            const table = document.getElementById('excelTable');
+            const filters = document.getElementsByClassName('column-filter');
+            const filterValues = Array.from(filters).map(filter => filter.value.toLowerCase());
+            const rows = table.getElementsByTagName('tr');
+
+            for (let i = 1; i < rows.length; i++) {
+                let showRow = true;
+                const cells = rows[i].getElementsByTagName('td');
+                for (let j = 0; j < filterValues.length; j++) {
+                    if (filterValues[j] && cells[j].innerText.toLowerCase().indexOf(filterValues[j]) === -1) {
+                        showRow = false;
+                        break;
+                    }
+                }
+                rows[i].style.display = showRow ? '' : 'none';
+            }
+        }
+    </script>
+</head>
+<body>
+    <h1>Excel Data</h1>
+    <div>
+        <form id="filterForm" onsubmit="event.preventDefault(); filterTable();">
+            {% for column in columns %}
+                <label for="filter-{{ column }}">{{ column }}:</label>
+                <input type="text" id="filter-{{ column }}" class="column-filter" oninput="filterTable()">
+            {% endfor %}
+        </form>
+    </div>
+    <div>
+        {{ data|safe }}
+    </div>
+    <a href="{% url 'upload_file' %}">Upload another file</a>
+    <script>
+        // Apply filter input styles
+        const filterForm = document.getElementById('filterForm');
+        const columnFilters = document.getElementsByClassName('column-filter');
+        for (const filter of columnFilters) {
+            filter.style.margin = '5px';
+            filter.style.padding = '5px';
+        }
+    </script>
+</body>
+</html>
