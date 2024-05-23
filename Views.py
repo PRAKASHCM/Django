@@ -11,7 +11,12 @@ def upload_file(request):
             data = df.to_html(index=False, table_id="excelTable")
             columns = df.columns.tolist()
             unique_values = {col: df[col].dropna().unique().tolist() for col in columns}
-            return render(request, 'excelapp/display.html', {'data': data, 'columns': columns, 'unique_values': unique_values})
+            context = {
+                'data': data,
+                'columns': columns,
+                'unique_values': unique_values
+            }
+            return render(request, 'excelapp/display.html', context)
     else:
         form = UploadFileForm()
     return render(request, 'excelapp/upload.html', {'form': form})
