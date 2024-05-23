@@ -26,7 +26,7 @@
                 let showRow = true;
                 const cells = rows[i].getElementsByTagName('td');
                 for (let j = 0; j < filterValues.length; j++) {
-                    if (filterValues[j] && cells[j].innerText.toLowerCase().indexOf(filterValues[j]) === -1) {
+                    if (filterValues[j] && filterValues[j] !== 'all' && cells[j].innerText.toLowerCase() !== filterValues[j]) {
                         showRow = false;
                         break;
                     }
@@ -39,12 +39,15 @@
 <body>
     <h1>Excel Data</h1>
     <div>
-        <form id="filterForm" onsubmit="event.preventDefault(); filterTable();">
-            {% for column in columns %}
-                <label for="filter-{{ column }}">{{ column }}:</label>
-                <input type="text" id="filter-{{ column }}" class="column-filter" oninput="filterTable()">
-            {% endfor %}
-        </form>
+        {% for column in columns %}
+            <label for="filter-{{ column }}">{{ column }}:</label>
+            <select id="filter-{{ column }}" class="column-filter" onchange="filterTable()">
+                <option value="all">All</option>
+                {% for value in unique_values[column] %}
+                    <option value="{{ value|lower }}">{{ value }}</option>
+                {% endfor %}
+            </select>
+        {% endfor %}
     </div>
     <div>
         {{ data|safe }}
@@ -52,9 +55,8 @@
     <a href="{% url 'upload_file' %}">Upload another file</a>
     <script>
         // Apply filter input styles
-        const filterForm = document.getElementById('filterForm');
-        const columnFilters = document.getElementsByClassName('column-filter');
-        for (const filter of columnFilters) {
+        const filters = document.getElementsByClassName('column-filter');
+        for (const filter of filters) {
             filter.style.margin = '5px';
             filter.style.padding = '5px';
         }
