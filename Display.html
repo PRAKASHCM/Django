@@ -43,7 +43,7 @@
             <label for="filter-{{ column }}">{{ column }}:</label>
             <select id="filter-{{ column }}" class="column-filter" onchange="filterTable()">
                 <option value="all">All</option>
-                {% for value in unique_values[column] %}
+                {% for value in unique_values|get_item:column %}
                     <option value="{{ value|lower }}">{{ value }}</option>
                 {% endfor %}
             </select>
